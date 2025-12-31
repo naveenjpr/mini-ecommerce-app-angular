@@ -1,0 +1,59 @@
+<header class="bg-white shadow-lg px-3 py-2 sticky top-0 z-50 ">
+    <nav class="max-w-[98%] mx-auto flex items-center justify-between p-[12px] h-[70px] ">
+
+        <!-- Logo -->
+        <div class="flex items-center">
+            <a routerLink="/" class="flex items-center gap-2 text-indigo-600 font-bold text-lg">
+                <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-600 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                        <path d="M9 12l2 2 4-4" />
+                    </svg>
+                </span>
+                <span>Angular</span>
+            </a>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="">
+            <ul class="flex items-center gap-8 text-sm font-medium text-gray-700">
+                <li>
+                    <a routerLink="/" routerLinkActive="text-indigo-600" [routerLinkActiveOptions]="{ exact: true }"
+                        class="flex items-center gap-1 hover:text-indigo-600 transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                        </svg>
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <a routerLink="/about" routerLinkActive="text-indigo-600"
+                        class="flex items-center gap-1 hover:text-indigo-600 transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                        </svg>
+                        About
+                    </a>
+                </li>
+
+                <li class="relative">
+                    <a routerLink="/cart" routerLinkActive="text-indigo-600"
+                        class="flex items-center gap-1 hover:text-indigo-600 transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M7 18a2 2 0 100 4 2 2 0 000-4zM1 2v2h2l3.6 7.6-1.35 2.45A2 2 0 007 18h12v-2H7.4l.95-1.6h7.45a2 2 0 001.75-1.03l3.58-6.5A1 1 0 0020.88 5H5.21l-.94-2H1z" />
+                        </svg>
+                        Cart
+                        <span class="ml-1 bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-full">
+                            {{ cartService.cartCount() }}
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </nav>
+
+
+</header>
