@@ -1,73 +1,111 @@
-<div class="max-w-[95%] mx-auto px-4 py-10">
-  <!-- Page Title -->
-  <h1 class="text-3xl font-bold text-center mb-10 text-gray-800">
+<div class="max-w-[95%] mx-auto px-3 sm:px-4 py-6 sm:py-10">
+
+  <!-- Heading -->
+  <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-10 text-gray-800">
     Featured Collections
   </h1>
 
-  <!-- Loading State -->
-  <div *ngIf="loading()" class="flex flex-col items-center justify-center py-20">
+  <!-- Filter -->
+  <div class="flex justify-end my-4">
+    <select class="w-full sm:w-auto border border-gray-500 p-2 rounded-md" (change)="onSortChange($event)">
+      <option value="">Filter</option>
+      <option value="name-asc">Name : A to Z</option>
+      <option value="name-desc">Name : Z to A</option>
+      <option value="price-asc">Price : Low to High</option>
+      <option value="price-desc">Price : High to Low</option>
+      <option value="discount-asc">Discounted Price : Low to High</option>
+      <option value="discount-desc">Discounted Price : High to Low</option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+  <div class="flex flex-col items-center py-20">
     <div class="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-    <p class="mt-4 text-gray-600 text-lg">
-      Discovering amazing products...
-    </p>
+    <p class="mt-4 text-gray-600">Loading products...</p>
   </div>
+  }
 
-  <!-- Error State -->
-  <div *ngIf="error()" class="text-center text-red-600 font-medium py-10">
-    <p>{{ error() }}</p>
-  </div>
+  <!-- Error -->
+  @if (error()) {
+  <p class="text-center text-red-600">{{ error() }}</p>
+  }
 
-  <!-- Product Grid -->
-  <div *ngIf="!loading() && !error()" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
-      *ngFor="let product of products()">
-      <!-- Image -->
-      <div class="relative h-56 bg-gray-100">
-        <img [src]="product.thumbnail" [alt]="product.title" class="w-full h-full object-cover" />
+  <!-- Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
 
-        <span *ngIf="product.discountPercentage"
-          class="absolute top-3 left-3 bg-red-500 text-white text-sm font-semibold px-2 py-1 rounded">
-          -{{ product.discountPercentage | number:'1.0-0' }}%
-        </span>
+    <!-- Sidebar -->
+    <aside class="bg-white rounded-2xl shadow-lg p-4 sm:p-5
+             lg:sticky lg:top-5 h-fit max-h-none lg:max-h-[80vh]
+             overflow-visible lg:overflow-y-auto">
+
+      <h2 class="text-lg sm:text-xl font-bold mb-4 border-b pb-2">
+        Categories
+      </h2>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2">
+        @for (category of categoryList(); track $index) {
+        <label class="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
+                   hover:bg-amber-50 transition group">
+          <input type="checkbox" (change)="onCategoryChange(category, $event)"
+            class="w-4 h-4 accent-amber-500 cursor-pointer" />
+
+          <span class="capitalize text-gray-700 text-sm font-medium group-hover:text-amber-600">
+            {{ category }}
+          </span>
+        </label>
+        }
       </div>
 
-      <!-- Content -->
-      <div class="p-4 flex flex-col flex-1">
-        <span class="text-sm text-gray-500 uppercase tracking-wide">
-          {{ product.brand || product.category }}
-        </span>
+    </aside>
 
-        <h2 class="text-lg font-semibold text-gray-800 mt-1">
-          {{ product.title }}
-        </h2>
+    <!-- Products -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
 
-        <p class="text-sm text-gray-600 mt-2 line-clamp-2">
-          {{ product.description }}
-        </p>
+      @for (product of products(); track product.id) {
+      <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col">
 
-        <div class="flex-grow"></div>
+        <div class="relative h-48 sm:h-56 bg-gray-100">
+          <img [src]="product.thumbnail" class="w-full h-full object-cover" />
 
-        <!-- Footer -->
-        <div class="mt-4 flex items-center justify-between">
-          <div>
-            <span class="text-xl font-bold text-gray-900">
+          @if (product.discountPercentage) {
+          <span class="absolute top-3 left-3 bg-red-500 text-white text-xs sm:text-sm px-2 py-1 rounded">
+            -{{ product.discountPercentage | number:'1.0-0' }}%
+          </span>
+          }
+        </div>
+
+        <div class="p-3 sm:p-4 flex flex-col flex-1">
+          <span class="text-xs sm:text-sm text-gray-500 uppercase">
+            {{ product.brand || product.category }}
+          </span>
+
+          <h3 class="font-semibold mt-1 text-sm sm:text-base">
+            {{ product.title }}
+          </h3>
+
+          <p class="text-xs sm:text-sm text-gray-600 mt-2 line-clamp-2">
+            {{ product.description }}
+          </p>
+
+          <div class="flex-grow"></div>
+
+          <div class="mt-4 flex justify-between items-center">
+            <span class="text-base sm:text-lg font-bold">
               ${{ product.price }}
             </span>
 
-            <div class="flex items-center text-sm text-yellow-500">
-              <span class="mr-1">★</span>
-              <span class="text-gray-700">
-                {{ product.rating }}
-              </span>
-            </div>
+            <button (click)="addToCart(product)" class="bg-blue-600 hover:bg-blue-700 text-white
+                       px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm">
+              Add to Cart
+            </button>
           </div>
-
-          <button (click)="addToCart(product)"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-            Add to Cart
-          </button>
         </div>
+
       </div>
-    </div>
+      }
+
+    </section>
+
   </div>
 </div>
