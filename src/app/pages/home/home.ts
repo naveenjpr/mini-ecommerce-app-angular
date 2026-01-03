@@ -18,6 +18,8 @@ export class Home implements OnInit {
   allProducts = signal<any[]>([]);
   categoryList = signal<string[]>([]);
   selectedCategories = signal<string[]>([]);
+  selectedProduct = signal<any>(null);
+  isModalOpen = signal<boolean>(false);
 
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
@@ -113,4 +115,25 @@ export class Home implements OnInit {
     }
 
   }
+
+  getProductsDetails(productDetailsId: any) {
+    this.isModalOpen.set(true);
+    axios.get(`https://dummyjson.com/products/${productDetailsId}`)
+      .then(response => {
+        this.selectedProduct.set(response.data);
+      })
+      .catch(err => {
+        console.error(err);
+        this.isModalOpen.set(false);
+      });
+  }
+
+  closeModal() {
+    this.isModalOpen.set(false);
+    this.selectedProduct.set(null);
+  }
+
+
+
 }
+
