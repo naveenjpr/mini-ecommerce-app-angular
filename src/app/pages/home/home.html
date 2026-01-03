@@ -65,11 +65,21 @@
       @for (product of products(); track product.id) {
       <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col">
 
-        <div class="relative h-48 sm:h-56 bg-gray-100">
-          <img [src]="product.thumbnail" class="w-full h-full object-cover" />
+        <div class="relative h-48 sm:h-56 bg-gray-100 group overflow-hidden ">
+          <img [src]="product.thumbnail"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+
+          <!-- Hover Overlay with View Details Button -->
+          <div
+            class="absolute inset-0  bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <button (click)="getProductsDetails(product.id)"
+              class="bg-white cursor-pointer text-gray-900 hover:bg-gray-100 font-medium px-4 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg">
+              View Details
+            </button>
+          </div>
 
           @if (product.discountPercentage) {
-          <span class="absolute top-3 left-3 bg-red-500 text-white text-xs sm:text-sm px-2 py-1 rounded">
+          <span class="absolute top-3 left-3 bg-red-500 text-white text-xs sm:text-sm px-2 py-1 rounded z-10">
             -{{ product.discountPercentage | number:'1.0-0' }}%
           </span>
           }
@@ -109,3 +119,122 @@
 
   </div>
 </div>
+
+<!-- Product Details -->
+<!-- Product Details Modal -->
+@if (isModalOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" (click)="closeModal()">
+  <div class="bg-white h-[500px] w-[500px] rounded-xl shadow-2xl overflow-hidden relative flex flex-col"
+    (click)="$event.stopPropagation()">
+
+    @if (selectedProduct()) {
+    <!-- Header -->
+    <div class="p-4 border-b flex justify-between items-start">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800 line-clamp-1">
+          {{ selectedProduct().title }}
+        </h2>
+        <p class="text-sm text-gray-500">Brand: {{ selectedProduct().brand }} • SKU: {{ selectedProduct().sku }}</p>
+      </div>
+      <button (click)="closeModal()" class="text-gray-500 hover:text-black">
+        ✕
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-4 grid grid-cols-2 gap-4 h-full overflow-y-auto">
+
+      <!-- Image -->
+      <div class="flex items-center justify-center bg-gray-100 rounded-lg h-40">
+        <img [src]="selectedProduct().thumbnail" [alt]="selectedProduct().title" class="object-contain h-full w-full" />
+      </div>
+
+      <!-- Product Info -->
+      <div class="space-y-2">
+        <p class="text-sm text-gray-600 line-clamp-3">
+          {{ selectedProduct().description }}
+        </p>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-lg font-bold text-green-600">${{ selectedProduct().price }}</span>
+          @if (selectedProduct().discountPercentage) {
+          <span class="text-sm line-through text-gray-400">
+            ${{ (selectedProduct().price * 100 / (100 - selectedProduct().discountPercentage)) | number:'1.2-2' }}
+          </span>
+          <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">
+            {{ selectedProduct().discountPercentage }}% OFF
+          </span>
+          }
+        </div>
+
+        <p class="text-sm">
+          ⭐ <span class="font-semibold">{{ selectedProduct().rating }}</span> Rating
+        </p>
+
+        <p class="text-sm text-green-600 font-medium">
+          {{ selectedProduct().availabilityStatus }} ({{ selectedProduct().stock }} available)
+        </p>
+
+        <p class="text-sm text-gray-500">
+          Category: {{ selectedProduct().category }}
+        </p>
+
+        <p class="text-sm text-gray-500">
+          Weight: {{ selectedProduct().weight }}g
+        </p>
+
+        <p class="text-sm text-gray-500">
+          Dimensions: {{ selectedProduct().dimensions?.width }} × {{ selectedProduct().dimensions?.height }} × {{
+          selectedProduct().dimensions?.depth }} cm
+        </p>
+      </div>
+
+      <!-- Shipping & Warranty -->
+      <div class="col-span-2 bg-gray-50 p-3 rounded-lg text-sm space-y-1">
+        <p><span class="font-medium">Shipping:</span> {{ selectedProduct().shippingInformation }}</p>
+        <p><span class="font-medium">Warranty:</span> {{ selectedProduct().warrantyInformation }}</p>
+        <p><span class="font-medium">Return:</span> {{ selectedProduct().returnPolicy }}</p>
+        <p><span class="font-medium">MOQ:</span> {{ selectedProduct().minimumOrderQuantity }} units</p>
+      </div>
+
+      <!-- Reviews -->
+      <div class="col-span-2">
+        <h3 class="font-semibold mb-2">Customer Reviews</h3>
+
+        <div class="space-y-2">
+          @for (review of selectedProduct().reviews; track $index) {
+          <div class="border p-2 rounded-md text-sm">
+            <div class="flex items-center gap-1 mb-1">
+              <span class="text-amber-500">
+                ⭐ {{ review.rating }}
+              </span>
+              <span class="font-medium">– {{ review.reviewerName }}</span>
+            </div>
+            <p class="text-gray-600">{{ review.comment }}</p>
+          </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="p-4 border-t flex gap-3 mt-auto bg-white">
+      <button (click)="addToCart(selectedProduct())"
+        class="flex-1 bg-black text-white py-2 rounded-lg hover:bg-gray-800">
+        Add to Cart
+      </button>
+      <button (click)="closeModal()" class="flex-1 border border-gray-400 py-2 rounded-lg hover:bg-gray-100">
+        Close
+      </button>
+    </div>
+    } @else {
+    <!-- Loading State -->
+    <div class="flex flex-1 items-center justify-center">
+      <div class="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+    </div>
+    }
+
+  </div>
+</div>
+}

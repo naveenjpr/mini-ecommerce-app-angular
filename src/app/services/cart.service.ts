@@ -10,6 +10,8 @@ export class CartService {
 
     cartCount = computed(() => this.cartItems().length);
 
+    order = signal<any>(this.getOrderFromStorage());
+
     constructor() {
         effect(() => {
             localStorage.setItem('cartItem', JSON.stringify(this.cartItems()));
@@ -22,6 +24,14 @@ export class CartService {
             return storedCart ? JSON.parse(storedCart) : [];
         }
         return [];
+    }
+
+    private getOrderFromStorage() {
+        if (typeof localStorage !== 'undefined') {
+            const storedOrder = localStorage.getItem('latestOrder');
+            return storedOrder ? JSON.parse(storedOrder) : null;
+        }
+        return null;
     }
 
     addToCart(product: any) {
@@ -52,6 +62,21 @@ export class CartService {
         if (confirm('are you sure delete')) {
             this.cartItems.update(items => items.filter(item => item.id !== productId));
         }
+    }
+
+    placeOrder(orderDetails: any, items: any[]) {
+        const newOrder = {
+            id: new Date().getTime(),
+            date: new Date(),
+            details: orderDetails,
+            items: items,
+            total: items.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0) * 1.05 // incl tax
+        };
+        this.order.set(newOrder);
+        localStorage.setItem('latestOrder', JSON.stringify(newOrder));
+
+        // Clear Cart
+        this.cartItems.set([]);
     }
 
 
