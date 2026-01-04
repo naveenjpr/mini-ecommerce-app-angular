@@ -75,8 +75,10 @@ export class CartService {
         this.order.set(newOrder);
         localStorage.setItem('latestOrder', JSON.stringify(newOrder));
 
-        // Clear Cart
-        this.cartItems.set([]);
+        // Clear Ordered Items from Cart
+        this.cartItems.update(currentItems =>
+            currentItems.filter(item => !items.some(orderedItem => orderedItem.id === item.id))
+        );
     }
 
 

@@ -25,6 +25,8 @@ export class Cart {
     email: '',
     address: '',
     city: '',
+    state: '',
+    pincode: '',
     phone: ''
   };
 
