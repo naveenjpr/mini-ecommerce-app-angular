@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 
@@ -11,5 +11,13 @@ import { CartService } from '../../services/cart.service';
 })
 export class Header {
   cartService = inject(CartService);
+  isMobileMenuOpen = signal(false);
 
+  toggleMobileMenu() {
+    this.isMobileMenuOpen.update(val => !val);
+  }
+
+  closeMobileMenu() {
+    this.isMobileMenuOpen.set(false);
+  }
 }
